@@ -1,0 +1,39 @@
+{% extends 'main.html' %}
+{% block content %}
+<header>
+    Employees profiles
+</header>
+<body>
+    <b>Enter parameters</b>
+    <p>
+    <form action="profiles" method="GET">
+    last name :<input name="nom"><p> 
+    first name :<input name="prénom"><p>    
+    <p><input type=submit><p>
+    </form>
+        
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Last name</th>
+            <th scope="col">first name</th>
+            <th scope="col">Category</th>
+            <th scope="col">mean_sent_per_day</th>
+            <th scope="col">mean_recieved_per_day</th>
+          </tr>
+        </thead>
+        <tbody>
+        {%for user in users%}  
+            <tr>
+            <td>{{user.last_name}}</td>
+            <td>{{user.first_name}}</td>
+            <td>{{user.category}}</td>
+            <td>{{user.mean_sent_per_day}}</td>
+            <td>{{user.mean_recieved_per_day}}</td>
+          </tr>
+        {% endfor %}  
+        </tbody>
+      </table>
+</body>
+
+{% endblock content%}

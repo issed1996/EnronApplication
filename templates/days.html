@@ -1,0 +1,41 @@
+{% extends 'main.html' %}
+{% block content %}
+<header>
+    Employees
+</header>
+<body>
+    <b>Enter parameters</b>
+    <p>
+    <form action="days" method="GET"> 
+    start_date: <input type="date" id="start_date" class="form-control form-control-alternative"
+        name="start_date" value="{{start_date }}">    
+    
+    end_date: <input type="date" id="end_date" class="form-control form-control-alternative" 
+        name="end_date" value="{{end_date }}">   
+    lines :<input name="lines"><p>   
+    minimum_threshold:<input name="minimum_threshold"><p>
+    maximum_threshold :<input name="maximum_threshold"><p>  
+    <p><input type=submit><p>
+    </form>
+
+
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">days</th>
+            <th scope="col">number of messages</th>
+          </tr>
+        </thead>
+        <tbody>
+        {%for day in days_records%}  
+            <tr>
+            <th scope="row">{{day.days}}</th>
+            <td>{{day.days_count}}</td>
+          </tr>
+        {% endfor %}  
+        </tbody>
+      </table>
+</body>
+
+{% endblock content%}

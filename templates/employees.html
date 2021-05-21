@@ -1,0 +1,46 @@
+{% extends 'main.html' %}
+{% block content %}
+<header>
+    Employees
+</header>
+<body>
+    <b>Enter parameters</b>
+    <p>
+    <form action="employees" method="GET">
+    request :<input name="request"><p>   
+    start_date: <input type="date" id="start_date" class="form-control form-control-alternative"
+        name="start_date" value="{{ start_date }}">    
+    
+    end_date: <input type="date" id="end_date" class="form-control form-control-alternative" 
+        name="end_date" value="{{ end_date }}">   
+    lines :<input name="lines"><p>   
+    minimum_threshold:<input name="minimum_threshold"><p>
+    maximum_threshold :<input name="maximum_threshold"><p>  
+    <p><input type=submit><p>
+    </form>
+
+
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">id</th>
+            <th scope="col">First name</th>
+            <th scope="col">Last name</th>
+            <th scope="col">Category</th>
+          </tr>
+        </thead>
+        <tbody>
+        {%for user in users%}  
+            <tr>
+            <th scope="row">{{user.id}}</th>
+            <td>{{user.last_name}}</td>
+            <td>{{user.first_name}}</td>
+            <td>{{user.category}}</td>
+          </tr>
+        {% endfor %}  
+        </tbody>
+      </table>
+</body>
+
+{% endblock content%}

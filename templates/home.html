@@ -1,0 +1,32 @@
+{% extends 'main.html' %}
+{% block content %}
+<header>
+    Welcome to ENRON application 
+</header>
+<h3>Please choose your request:</h3>
+<body>
+    <form action="employees" method="GET">
+        <button class="btn success">employees</button>
+    </form>
+
+    <form action="couples" method="GET">
+        <button class="btn success">couples</button>
+    </form>
+
+    
+    <form action="days" method="GET">
+        <button class="btn success">days</button>
+    </form>
+
+    <form action="profiles" method="GET">
+        <button class="btn success">profiles</button>
+    </form>
+
+
+
+
+
+</body>
+
+
+{% endblock content%}
