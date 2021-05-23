@@ -1,5 +1,5 @@
 from django.db.models import query
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .models import Employee,mail,mail_address
 from django.utils.timezone import datetime
@@ -7,8 +7,19 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import connection
 from django.db.models.functions import TruncDate
 from django.db.models import Count
-# Create your views here.
 
+from django.contrib.auth.forms import UserCreationForm
+
+from django.contrib.auth import authenticate, login, logout
+
+from django.contrib import messages
+
+from django.contrib.auth.decorators import login_required
+
+
+
+
+# Create your views here.
 
 
 def home(request):
@@ -29,6 +40,7 @@ def employees(request):
     lines = request.GET.get('lines')
     minimum_threshold=request.GET.get('minimum_threshold')
     maximum_threshold=request.GET.get('maximum_threshold')
+    
     if not lines:
         lines=10
     if lines:
@@ -45,7 +57,18 @@ def employees(request):
     if lines:
         pass
     
-    req=request.GET.get('request')
+
+    if not minimum_threshold:
+        minimum_threshold= 0
+    if minimum_threshold:
+        pass
+
+    if not maximum_threshold:
+        maximum_threshold= 1000000000
+    if maximum_threshold:
+        pass    
+
+    req=request.GET.get('Request')
     if not req:
         users=Employee.objects.raw(f'SELECT * FROM application1_employee LIMIT {lines}')
     if req=='communicating most internaly':
@@ -60,16 +83,18 @@ def employees(request):
                             AND application1_mail.recipient_mail_id IN (SELECT DISTINCT application1_mail.recipient_mail_id
                             FROM application1_mail,application1_mail_address
                             WHERE application1_mail_address.id=application1_mail.recipient_mail_id
-                            AND application1_mail_address.address LIKE '{sufix_enron}'
+                            AND application1_mail_address.address LIKE '%enron.com'
                             AND application1_mail.mail_date <'{end_date}'
                             AND application1_mail.mail_date >'{start_date}')) AS TAB
-                            GROUP BY TAB.id,
+                            where TAB.category !='not employee'
+							GROUP BY TAB.id,
                                 TAB.first_name,
 		                        TAB.last_name,
 		                        TAB.category,
                                 TAB.mail_box
-                            HAVING COUNT(*) > 1	
+                            HAVING COUNT(*)>'{minimum_threshold}'	AND COUNT(*)<'{maximum_threshold}'
                             ORDER BY occurences DESC
+							
                             LIMIT {lines}
                             """
         cursor=connection.cursor()
@@ -77,19 +102,20 @@ def employees(request):
         users=dictfetchall(cursor)
 
     if req=='prompt response':
-        prompt_response_query=f"""SELECT application1_employee.*
-                            FROM (SELECT application1_mail_address.*
-                                FROM (SELECT DISTINCT application1_mail.sender_mail_id, application1_mail.mail_date-application1_mail.previous_mail_date AS response_time
+        prompt_response_query=f"""SELECT TAB2.response_time,application1_employee.*
+from (SELECT TAB.*,application1_mail_address.id,application1_mail_address.employee_id
+FROM (SELECT DISTINCT application1_mail.sender_mail_id, application1_mail.mail_date-application1_mail.previous_mail_date AS response_time
                                 FROM application1_mail
                                 WHERE application1_mail.mail_date>application1_mail.previous_mail_date
                                 AND application1_mail.mail_date <'{end_date}'
                                 AND application1_mail.mail_date >'{start_date}'	  
-                                ORDER BY response_time )AS TAB
-                                INNER JOIN application1_mail_address
-                                ON TAB.sender_mail_id =application1_mail_address.id) AS TAB2
-                                INNER JOIN application1_employee
-                                ON TAB2.employee_id=application1_employee.id
-                                LIMIT {lines}
+                                ORDER BY response_time) AS TAB
+								inner join application1_mail_address
+								on application1_mail_address.id=TAB.sender_mail_id) as TAB2
+								inner join application1_employee
+								on application1_employee.id=TAB2.employee_id
+								where category!='not employee'
+								LIMIT {lines}
                             """
         cursor=connection.cursor()
         cursor.execute(prompt_response_query)
@@ -104,6 +130,7 @@ def employees(request):
                                 AND application1_mail.mail_date <'{end_date}'
                                 AND application1_mail.mail_date >'{start_date}'	  
                                 GROUP BY application1_mail.sender_mail_id
+								having COUNT(application1_mail.sender_mail_id)<'{maximum_threshold}' AND COUNT(application1_mail.sender_mail_id)>'{minimum_threshold}'
                                 ORDER BY occ DESC) AS TAB
                                 INNER JOIN application1_mail_address
                                 ON TAB.sender_mail_id=application1_mail_address.id) AS TAB2
@@ -149,6 +176,18 @@ def couples(request):
         end_date= datetime(2001, 1, 1)
     if lines:
         pass
+
+
+    if not minimum_threshold:
+        minimum_threshold= 0
+    if minimum_threshold:
+        pass
+
+    if not maximum_threshold:
+        maximum_threshold= 2999
+    if maximum_threshold:
+        pass     
+
     #users=Employee.objects.raw('SELECT * FROM application1_employee limit 10')
     couples_query=f"""
                 SELECT TAB2.sender_category,TAB2.sender_last_name,TAB2.sender_first_name,application1_employee.category as recipient_category,application1_employee.last_name as recipient_last_name,application1_employee.first_name as recipient_first_name,TAB2.occ
@@ -159,6 +198,7 @@ def couples(request):
                 WHERE application1_mail.mail_date <'{end_date}'
                 AND application1_mail.mail_date >'{start_date}'	  
                 GROUP BY application1_mail.sender_mail_id, application1_mail.recipient_mail_id
+                HAVING COUNT(*)<'{maximum_threshold}' AND COUNT(*)>'{minimum_threshold}'
                 ORDER BY occ DESC) AS TAB
                 INNER JOIN application1_mail_address
                 ON TAB.sender_mail_id=application1_mail_address.id
@@ -168,6 +208,8 @@ def couples(request):
                 ON TAB2.recipient_mail_id=application1_mail_address.id
                 INNER JOIN application1_employee
                 ON application1_employee.id=application1_mail_address.employee_id
+                where TAB2.sender_category!='not employee'
+                AND  application1_employee.category !='not employee'
                 LIMIT {lines}
                 """
     cursor=connection.cursor()
@@ -208,11 +250,23 @@ def days(request):
     if lines:
         pass
 
+
+    if not minimum_threshold:
+        minimum_threshold= 0
+    if minimum_threshold:
+        pass
+
+    if not maximum_threshold:
+        maximum_threshold= 1000000000
+    if maximum_threshold:
+        pass   
+
     mails_per_day_request=f""" SELECT DATE(application1_mail.mail_date) AS days,COUNT(*) as days_count
         FROM application1_mail
         WHERE mail_date>'{start_date}'
         AND mail_date<'{end_date}'
         GROUP BY days
+        having COUNT(application1_mail.sender_mail_id)<'{maximum_threshold}' AND COUNT(*)>'{minimum_threshold}'
         ORDER BY days_count desc
         LIMIT {lines}"""
     cursor=connection.cursor()

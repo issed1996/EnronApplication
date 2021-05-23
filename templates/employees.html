@@ -1,13 +1,31 @@
 {% extends 'main.html' %}
 {% block content %}
-<header>
-    Employees
-</header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.css" />
+</head>
+<section class="hero is-primary">
+  <div class="hero-body">
+      <div class="container">
+          <h1 class="title">
+              Employees
+          </h1>
+      </div>
+  </div>
+</section>
 <body>
+  <section>
     <b>Enter parameters</b>
     <p>
-    <form action="employees" method="GET">
-    request :<input name="request"><p>   
+      <form action="employees" method="GET"> 
+        <div>
+           <input type="radio" value="communicating most internaly" name="Request"> communicating most internaly <br />
+           <input type="radio" value="prompt response" name="Request">prompt response<br />
+           <input type="radio" value="information distributors" name="Request">information distributors <br />
+          </div>  
     start_date: <input type="date" id="start_date" class="form-control form-control-alternative"
         name="start_date" value="{{ start_date }}">    
     
@@ -18,15 +36,15 @@
     maximum_threshold :<input name="maximum_threshold"><p>  
     <p><input type=submit><p>
     </form>
-
+  </section>
 
 
     <table class="table">
         <thead>
           <tr>
             <th scope="col">id</th>
-            <th scope="col">First name</th>
             <th scope="col">Last name</th>
+            <th scope="col">First name</th>
             <th scope="col">Category</th>
           </tr>
         </thead>

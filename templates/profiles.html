@@ -1,9 +1,23 @@
 {% extends 'main.html' %}
 {% block content %}
-<header>
-    Employees profiles
-</header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.css" />
+</head>
+<section class="hero is-primary">
+  <div class="hero-body">
+      <div class="container">
+          <h1 class="title">
+              Profiles
+          </h1>
+      </div>
+  </div>
+</section>
 <body>
+<section>
     <b>Enter parameters</b>
     <p>
     <form action="profiles" method="GET">
@@ -11,7 +25,8 @@
     first name :<input name="prénom"><p>    
     <p><input type=submit><p>
     </form>
-        
+  </section>
+    
     <table class="table">
         <thead>
           <tr>
