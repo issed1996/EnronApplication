@@ -1,10 +1,23 @@
 {% extends 'main.html' %}
 {% block content %}
-<header>
-    Welcome to ENRON application 
-</header>
-<h3>Please choose your request:</h3>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.css" />
+  </head>
+  <section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Welcome To Enron Application
+            </h1>
+        </div>
+    </div>
+  </section>
 <body>
+    <section>
     <form action="employees" method="GET">
         <button class="btn success">employees</button>
     </form>
@@ -22,7 +35,11 @@
         <button class="btn success">profiles</button>
     </form>
 
+    <form action="" method="GET">
+        <button class="btn success">Logout</button>
+    </form>
 
+    <section>
 
 
 
@@ -30,3 +47,5 @@
 
 
 {% endblock content%}
+   
+   
